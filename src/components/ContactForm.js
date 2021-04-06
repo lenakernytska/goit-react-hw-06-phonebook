@@ -1,29 +1,33 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import styles from './ContactForm.module.css'
-import { connect } from "react-redux";
-import{addContact} from "../redux/actions";
+import {addContact} from "../redux/actions";
 
-class ContactForm extends Component{
-state = {
-  name: '',
-  number: ''
-    }
 
-    handleChange = event => {
-        const { name, value } = event.currentTarget;
-        this.setState({ [name]: value });
+export default function ContactForm (){
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const dispatch = useDispatch();
+
+   const handleNameChange = event => {
+       setName(event.target.value)
+  };
+  
+   const handleNumberChange = event => {
+       setNumber(event.target.value)
     };
     
-  handleSubmit = event => {
+ const handleSubmit = event => {
     event.preventDefault();
-    this.props.onSubmit(this.state);
-    this.setState({ name: '', number: '' });
-       }
+    dispatch(addContact( name, number ));
+    setName('');
+    setNumber('');
+  }
     
-     render() {
-        const { name, number } = this.state;
-        return (
-            <form className={styles.form} onSubmit={this.handleSubmit}>
+  
+  return (
+            <form className={styles.form} onSubmit={handleSubmit}>
         <label className={styles.label}>
                     Name
          <input
@@ -32,7 +36,7 @@ state = {
                 name="name"
                 value={name}
                 autoComplete="off"
-                onChange={this.handleChange}
+                onChange={handleNameChange}
                 pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                 title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
                 required
@@ -49,7 +53,7 @@ state = {
             required
             value={number}
             autoComplete="off"
-            onChange={this.handleChange}
+            onChange={handleNumberChange}
           />
         </label>
 
@@ -57,11 +61,4 @@ state = {
       </form>
         )
     }
-}
 
-
-const mapDispatchToProps = dispatch => ({
-  onSubmit: ({name, number})=>dispatch(addContact(name, number))
-})
-
-export default connect(null, mapDispatchToProps)(ContactForm);
